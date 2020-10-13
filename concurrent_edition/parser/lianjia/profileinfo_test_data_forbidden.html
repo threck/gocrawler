@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>人机认证</title>
+    <link href="https://s1.ljcdn.com/security_goblin/bootstrap-grid.min.css" rel="stylesheet">
+    <script src="https://s1.ljcdn.com/captcha-js-sdk/captcha.js"></script>
+    <script src="https://s1.ljcdn.com/security_goblin/axios.min.js"></script>
+</head>
+
+<body>
+<div class="container" style="border-bottom: 1px solid #000;">
+    <div class="row">
+        <h1>人机认证</h1>
+    </div>
+
+    <div class="row">
+        <div style="width: 100%;background: #3072f6;color: #fff;padding: 0 20px 20px;">
+            <h3>您无法访问此网站</h3>
+            <p>网站开启了安全防护策略，检测到您最近的操作异常</p>
+            <p>为保证您的正常访问，请进行人机身份认证</p>
+            <div id="captcha"></div>
+        </div>
+    </div>
+    <div id="display">
+    </div>
+    <div class="row">
+        <div class="col-6" style="padding-left: 0;">
+            <h2>问题反馈</h2>
+            <p>请发邮件给我们，描述您的问题，邮件需要包含您当前的操作和数据</p>
+        </div>
+        <div class="col-6" style="padding-left: 0;">
+            <h2>联系我们</h2>
+            <p>邮箱：sec_tech@ke.com</p>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    function get_cookie(key) {
+        var start = 0;
+        if (document.cookie && document.cookie != "") {
+            start = document.cookie.indexOf(key + "=")
+            if (start != -1) {
+                start = start + key.length + 1;
+                var end = document.cookie.indexOf(";", start);
+                if (end == -1) {
+                    end = document.cookie.length;
+                }
+                return unescape(document.cookie.substring(start, end));
+            }
+        }
+        return "";
+    }
+
+    function interpolate(theString, argumentArray) {
+        var regex = /%s/;
+        var _r = function (p, c) {
+            return p.replace(regex, c);
+        };
+        return argumentArray.reduce(_r, theString);
+    }
+
+    window.onload = function () {
+        var ip = get_cookie("User-Realip");
+        var uuid = get_cookie("lianjia_uuid");
+        var time = new Date().toISOString();
+        var url = window.location.href;
+
+        var template = '<div class="row"><span style="width: 50px;">%s</span><span>%s</span></div>';
+        var d = document.getElementById('display');
+
+        var str = '';
+        if (ip != '') {
+            str += interpolate(template, ['IP', ip]);
+        }
+        if (uuid != '') {
+            str += interpolate(template, ['UUID', uuid]);
+        }
+        str += interpolate(template, ['Time', time]);
+        str += interpolate(template, ['URL', url]);
+        console.log(str);
+        d.innerHTML = str;
+    };
+</script>
+<script src="https://s1.ljcdn.com/security_goblin/captchaV2.js"></script>
+
+</html>
